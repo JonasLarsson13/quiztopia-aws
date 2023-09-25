@@ -1,10 +1,119 @@
-service: quiztopia
+service: quiztopia-examination
 frameworkVersion: '3'
 
 provider:
   name: aws
   runtime: nodejs18.x
+  profile: in-examination
+  region: eu-north-1
+  iam:
+    role: arn:aws:iam::861123931289:role/quiztopia-examination
+  deploymentMethod: direct
+
+plugins:
+  - serverless-webpack
+
+package:
+  individually: true
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.cjs'
 
 functions:
-  function1:
-    handler: index.handler
+  createUser:
+    handler: src/functions/user/createUser.handler
+    events:
+      - http:
+          path: users
+          method: POST
+  getUser:
+    handler: src/functions/user/getUser.handler
+    events:
+      - http:
+          path: users/{userId}
+          method: GET
+  createQuiz:
+    handler: src/functions/quiz/createQuiz.handler
+    events:
+      - http:
+          path: quizzes
+          method: POST
+  getQuizzes:
+    handler: src/functions/quiz/getQuizzes.handler
+    events:
+      - http:
+          path: quizzes
+          method: GET
+  getQuiz:
+    handler: src/functions/quiz/getQuiz.handler
+    events:
+      - http:
+          path: quizzes/{quizId}
+          method: GET
+  deleteQuiz:
+    handler: src/functions/quiz/deleteQuiz.handler
+    events:
+      - http:
+          path: quizzes/{quizId}
+          method: DELETE
+  addQuestionToQuiz:
+    handler: src/functions/quiz/addQuestionToQuiz.handler
+    events:
+      - http:
+          path: quizzes/{quizId}/questions
+          method: POST
+  getQuestionsForQuiz:
+    handler: src/functions/quiz/getQuestionsForQuiz.handler
+    events:
+      - http:
+          path: quizzes/{quizId}/questions
+          method: GET
+
+resources:
+  Resources:
+    UsersTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        TableName: Users
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+    QuizzesTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        TableName: Quizzes
+        AttributeDefinitions:
+          - AttributeName: quizId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: quizId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+    QuestionsTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        TableName: Questions
+        AttributeDefinitions:
+          - AttributeName: quizId
+            AttributeType: S
+          - AttributeName: questionId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: quizId
+            KeyType: HASH
+          - AttributeName: questionId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
