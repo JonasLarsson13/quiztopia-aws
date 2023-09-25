@@ -9,6 +9,7 @@ provider:
   iam:
     role: arn:aws:iam::861123931289:role/quiztopia-examination
   deploymentMethod: direct
+  stage: api
 
 plugins:
   - serverless-webpack
@@ -21,53 +22,53 @@ custom:
     webpackConfig: 'webpack.config.cjs'
 
 functions:
-  createUser:
-    handler: src/functions/user/createUser.handler
+  registerUser:
+    handler: src/functions/auth/registerUser.handler
     events:
       - http:
-          path: users
+          path: /auth/register
           method: POST
-  getUser:
-    handler: src/functions/user/getUser.handler
+  loginUser:
+    handler: src/functions/auth/loginUser.handler
     events:
       - http:
-          path: users/{userId}
+          path: /auth/login
           method: GET
   createQuiz:
     handler: src/functions/quiz/createQuiz.handler
     events:
       - http:
-          path: quizzes
+          path: /quiz
           method: POST
   getQuizzes:
     handler: src/functions/quiz/getQuizzes.handler
     events:
       - http:
-          path: quizzes
+          path: /quiz
           method: GET
   getQuiz:
     handler: src/functions/quiz/getQuiz.handler
     events:
       - http:
-          path: quizzes/{quizId}
+          path: /quiz/{quizId}
           method: GET
   deleteQuiz:
     handler: src/functions/quiz/deleteQuiz.handler
     events:
       - http:
-          path: quizzes/{quizId}
+          path: /quiz/{quizId}
           method: DELETE
   addQuestionToQuiz:
     handler: src/functions/quiz/addQuestionToQuiz.handler
     events:
       - http:
-          path: quizzes/{quizId}/questions
+          path: /quiz/{quizId}/questions
           method: POST
   getQuestionsForQuiz:
     handler: src/functions/quiz/getQuestionsForQuiz.handler
     events:
       - http:
-          path: quizzes/{quizId}/questions
+          path: /quiz/{quizId}/questions
           method: GET
 
 resources:
@@ -91,11 +92,15 @@ resources:
       Properties:
         TableName: Quizzes
         AttributeDefinitions:
+          - AttributeName: createdBy
+            AttributeType: S
           - AttributeName: quizId
             AttributeType: S
         KeySchema:
-          - AttributeName: quizId
-            KeyType: HASH
+            - AttributeName: createdBy
+              KeyType: HASH
+            - AttributeName: quizId
+              KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
