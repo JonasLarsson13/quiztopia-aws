@@ -6,6 +6,8 @@ export const handler = async (event) => {
       success: true,
     });
   } catch (error) {
-    return sendResponse(400, { error: "something went wrong" });
+    let message =
+      error?.details?.message || error?.message || "Something went wrong";
+    return sendResponse(400, { error: message });
   }
 };
