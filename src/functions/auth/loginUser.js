@@ -1,5 +1,4 @@
 import { sendResponse } from "../../responses/index.js";
-import { db } from "../../services/db.js";
 import { getUserByUsername } from "../../services/user.js";
 import { signJwtToken } from "../../utils/jwt.js";
 import { validateAuthInputs } from "../../utils/validateBody.js";
