@@ -33,7 +33,7 @@ functions:
     events:
       - http:
           path: /auth/login
-          method: GET
+          method: POST
   createQuiz:
     handler: src/functions/quiz/createQuiz.handler
     events:
@@ -64,12 +64,6 @@ functions:
       - http:
           path: /quiz/{quizId}/questions
           method: POST
-  getQuestionsForQuiz:
-    handler: src/functions/quiz/getQuestionsForQuiz.handler
-    events:
-      - http:
-          path: /quiz/{quizId}/questions
-          method: GET
 
 resources:
   Resources:
