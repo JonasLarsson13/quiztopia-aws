@@ -15,7 +15,7 @@ export const getUserByUsername = async (username) => {
 
     const scanResult = await db.scan(params).promise();
 
-    if (scanResult.Items.length === 0) return false;
+    if (scanResult?.Items?.length === 0) return false;
 
     return scanResult;
   } catch (error) {

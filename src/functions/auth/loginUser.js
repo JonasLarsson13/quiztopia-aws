@@ -11,10 +11,7 @@ export const handler = async (event) => {
 
     const scanResult = await getUserByUsername(username);
 
-    if (
-      scanResult.Items.length === 0 ||
-      scanResult.Items[0].password !== password
-    ) {
+    if (!scanResult || scanResult?.Items[0]?.password !== password) {
       return sendResponse(401, { error: "Authentication failed, try again." });
     }
 

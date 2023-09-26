@@ -10,7 +10,6 @@ export const handler = async (event) => {
       });
     }
     const quizId = event.pathParameters.quizId;
-    const createdBy = event.pathParameters.createdBy;
 
     const quizParams = {
       TableName: "Quizzes",
@@ -22,15 +21,14 @@ export const handler = async (event) => {
 
     const quizResult = await db.query(quizParams).promise();
 
-    if (!quizResult.Items || quizResult.Items.length === 0) {
+    if (!quizResult?.Items || quizResult?.Items?.length === 0) {
       return sendResponse(404, { error: "Quiz not found" });
     }
 
     const questionParams = {
       TableName: "Questions",
-      KeyConditionExpression: "createdBy = :createdBy AND quizId = :quizId",
+      KeyConditionExpression: "quizId = :quizId",
       ExpressionAttributeValues: {
-        ":createdBy": createdBy,
         ":quizId": quizId,
       },
     };

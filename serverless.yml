@@ -50,7 +50,7 @@ functions:
     handler: src/functions/quiz/getQuiz.handler
     events:
       - http:
-          path: /quiz/{createdBy}/{quizId}
+          path: /quiz/{quizId}
           method: GET
   deleteQuiz:
     handler: src/functions/quiz/deleteQuiz.handler
@@ -86,15 +86,11 @@ resources:
       Properties:
         TableName: Quizzes
         AttributeDefinitions:
-          - AttributeName: createdBy
-            AttributeType: S
           - AttributeName: quizId
             AttributeType: S
         KeySchema:
-            - AttributeName: createdBy
-              KeyType: HASH
             - AttributeName: quizId
-              KeyType: RANGE
+              KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
