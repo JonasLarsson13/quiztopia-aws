@@ -62,7 +62,7 @@ functions:
     handler: src/functions/quiz/addQuestionToQuiz.handler
     events:
       - http:
-          path: /quiz/{quizId}/questions
+          path: /quiz/{quizId}/addQuestion
           method: POST
 
 resources:

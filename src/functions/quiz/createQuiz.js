@@ -23,8 +23,6 @@ export const handler = middy()
         quizId: quizId,
         createdBy: event.username,
         name: name,
-        latitude: 1234567,
-        longitude: 45332456,
       };
 
       const quizParams = {
