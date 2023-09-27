@@ -36,12 +36,15 @@ export const handler = middy()
       const existingEntry = await db.get(params).promise();
 
       if (existingEntry.Item) {
+        const existingLeaderboardId = existingEntry.Item.leaderboardId;
+
         const updatedScore = existingEntry.Item.score + score;
 
         const updateParams = {
           TableName: "Leaderboard",
           Key: {
-            leaderboardId: `${quizId}_${username}`,
+            leaderboardId: existingLeaderboardId,
+            user: username,
           },
           UpdateExpression: "SET score = :score",
           ExpressionAttributeValues: {
@@ -50,8 +53,7 @@ export const handler = middy()
           ReturnValues: "ALL_NEW",
         };
 
-        const updatedEntry = await db.update(updateParams).promise();
-        return updatedEntry.Attributes;
+        await db.update(updateParams).promise();
       } else {
         const newItem = {
           TableName: "Leaderboard",
