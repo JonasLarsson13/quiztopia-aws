@@ -124,20 +124,13 @@ resources:
       Properties:
         TableName: Leaderboard
         AttributeDefinitions:
-          - AttributeName: leaderboardId
+          - AttributeName: quizId
             AttributeType: S
           - AttributeName: user
             AttributeType: S
         KeySchema:
-          - AttributeName: leaderboardId
+          - AttributeName: quizId
             KeyType: HASH
           - AttributeName: user
             KeyType: RANGE
-        GlobalSecondaryIndexes:
-          - IndexName: UserIndex
-            KeySchema:
-              - AttributeName: user
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST

@@ -28,23 +28,21 @@ export const handler = middy()
       const params = {
         TableName: "Leaderboard",
         Key: {
-          leaderboardId: leaderboardId,
-          user: username,
+          quizId: quizId, // Use quizId as HASH key
+          user: username, // Use user as RANGE key
         },
       };
 
       const existingEntry = await db.get(params).promise();
 
       if (existingEntry.Item) {
-        const existingLeaderboardId = existingEntry.Item.leaderboardId;
-
         const updatedScore = existingEntry.Item.score + score;
 
         const updateParams = {
           TableName: "Leaderboard",
           Key: {
-            leaderboardId: existingLeaderboardId,
-            user: username,
+            quizId: quizId, // Use quizId as HASH key
+            user: username, // Use user as RANGE key
           },
           UpdateExpression: "SET score = :score",
           ExpressionAttributeValues: {
@@ -58,9 +56,8 @@ export const handler = middy()
         const newItem = {
           TableName: "Leaderboard",
           Item: {
-            leaderboardId: `${quizId}_${username}`,
-            quizId: quizId,
-            user: username,
+            quizId: quizId, // Use quizId as HASH key
+            user: username, // Use user as RANGE key
             score: score,
           },
         };
