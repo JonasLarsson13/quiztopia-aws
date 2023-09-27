@@ -64,6 +64,18 @@ functions:
       - http:
           path: /quiz/{quizId}/addQuestion
           method: POST
+  addPointsToUser:
+    handler: src/functions/quiz/addPointsToUser.handler
+    events:
+      - http:
+          path: /quiz/{quizId}/addpoints
+          method: POST
+  leaderBoardForQuiz:
+    handler: src/functions/quiz/leaderboard.handler
+    events:
+      - http:
+          path: /quiz/{quizId}/leaderboard 
+          method: GET
 
 resources:
   Resources:
@@ -77,9 +89,7 @@ resources:
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+        BillingMode: PAY_PER_REQUEST
 
     QuizzesTable:
       Type: 'AWS::DynamoDB::Table'
@@ -91,9 +101,7 @@ resources:
         KeySchema:
             - AttributeName: quizId
               KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+        BillingMode: PAY_PER_REQUEST
 
     QuestionsTable:
       Type: 'AWS::DynamoDB::Table'
@@ -109,6 +117,27 @@ resources:
             KeyType: HASH
           - AttributeName: questionId
             KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+        BillingMode: PAY_PER_REQUEST
+
+    LeaderboardTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        TableName: Leaderboard
+        AttributeDefinitions:
+          - AttributeName: leaderboardId
+            AttributeType: S
+          - AttributeName: user
+            AttributeType: S
+        KeySchema:
+          - AttributeName: leaderboardId
+            KeyType: HASH
+          - AttributeName: user
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: UserIndex
+            KeySchema:
+              - AttributeName: user
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST

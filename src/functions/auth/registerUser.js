@@ -16,7 +16,7 @@ export const handler = async (event) => {
         message: "Username already exists, try another one",
       });
 
-    const user = { ...body, points: 0, userId: `USR${nanoid()}` };
+    const user = { ...body, userId: `USR${nanoid()}` };
     const token = signJwtToken(user);
 
     const params = {
