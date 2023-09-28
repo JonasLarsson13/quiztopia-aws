@@ -2,6 +2,7 @@ import middy from "@middy/core";
 import { sendResponse } from "../../responses/index.js";
 import { validateToken } from "../../middleware/auth.js";
 import { db } from "../../services/db.js";
+import { validatePoints } from "../../utils/validateBody.js";
 
 export const handler = middy()
   .use(validateToken)
@@ -11,6 +12,13 @@ export const handler = middy()
       const { score } = body;
       const username = event.username;
       const quizId = event.pathParameters.quizId;
+
+      const pointsError = validatePoints(score);
+      if (pointsError) {
+        return sendResponse(400, {
+          message: pointsError,
+        });
+      }
 
       if (!event?.userId || (event?.error && event?.error === "401"))
         return sendResponse(401, {
@@ -23,13 +31,11 @@ export const handler = middy()
           message: "Something is missing or score is below 0",
         });
 
-      const leaderboardId = `${quizId}_${username}`;
-
       const params = {
         TableName: "Leaderboard",
         Key: {
-          quizId: quizId, // Use quizId as HASH key
-          user: username, // Use user as RANGE key
+          quizId: quizId,
+          user: username,
         },
       };
 
@@ -41,8 +47,8 @@ export const handler = middy()
         const updateParams = {
           TableName: "Leaderboard",
           Key: {
-            quizId: quizId, // Use quizId as HASH key
-            user: username, // Use user as RANGE key
+            quizId: quizId,
+            user: username,
           },
           UpdateExpression: "SET score = :score",
           ExpressionAttributeValues: {
@@ -56,8 +62,8 @@ export const handler = middy()
         const newItem = {
           TableName: "Leaderboard",
           Item: {
-            quizId: quizId, // Use quizId as HASH key
-            user: username, // Use user as RANGE key
+            quizId: quizId,
+            user: username,
             score: score,
           },
         };

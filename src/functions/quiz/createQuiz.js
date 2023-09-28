@@ -4,6 +4,10 @@ import { sendResponse } from "../../responses/index.js";
 import { validateToken } from "../../middleware/auth.js";
 import { db } from "../../services/db.js";
 import { createQuestion } from "../../services/quiz.js";
+import {
+  validateQuestion,
+  validateQuizName,
+} from "../../utils/validateBody.js";
 
 export const handler = middy()
   .use(validateToken)
@@ -17,6 +21,21 @@ export const handler = middy()
 
       const body = JSON.parse(event.body);
       const { name, questions } = body;
+      const quizNameError = validateQuizName(name);
+      if (quizNameError) {
+        return sendResponse(400, {
+          message: quizNameError,
+        });
+      }
+
+      for (const questionData of questions) {
+        const questionInputError = validateQuestion(questionData);
+        if (questionInputError) {
+          return sendResponse(400, {
+            message: questionInputError,
+          });
+        }
+      }
 
       const quizId = nanoid();
       const quizItem = {

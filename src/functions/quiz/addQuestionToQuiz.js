@@ -2,11 +2,21 @@ import middy from "@middy/core";
 import { sendResponse } from "../../responses/index.js";
 import { validateToken } from "../../middleware/auth.js";
 import { createQuestion, getQuiz } from "../../services/quiz.js";
+import { validateQuestion } from "../../utils/validateBody.js";
 
 export const handler = middy()
   .use(validateToken)
   .handler(async (event) => {
     try {
+      const body = JSON.parse(event.body);
+
+      const questionInputError = validateQuestion(body);
+      if (questionInputError) {
+        return sendResponse(400, {
+          message: questionInputError,
+        });
+      }
+
       if (!event?.userId || (event?.error && event?.error === "401"))
         return sendResponse(401, {
           success: false,
@@ -23,8 +33,6 @@ export const handler = middy()
           message: "You are not authorized to add a question to this quiz.",
         });
       }
-
-      const body = JSON.parse(event.body);
 
       await createQuestion(body, quizId);
 

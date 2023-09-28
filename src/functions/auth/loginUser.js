@@ -6,13 +6,21 @@ import { validateAuthInputs } from "../../utils/validateBody.js";
 export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
-    validateAuthInputs(body);
+    const isLogin = true;
+    const validationError = validateAuthInputs(body, isLogin);
+    if (validationError) {
+      return sendResponse(400, {
+        message: validationError,
+      });
+    }
     const { username, password } = body;
 
     const scanResult = await getUserByUsername(username);
 
     if (!scanResult || scanResult?.Items[0]?.password !== password) {
-      return sendResponse(401, { error: "Authentication failed, try again." });
+      return sendResponse(401, {
+        error: "Wrong username or password, try again.",
+      });
     }
 
     const token = signJwtToken(scanResult.Items[0]);

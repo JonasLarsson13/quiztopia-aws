@@ -8,7 +8,12 @@ import { getUserByUsername } from "../../services/user.js";
 export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
-    validateAuthInputs(body);
+    const validationError = validateAuthInputs(body);
+    if (validationError) {
+      return sendResponse(400, {
+        message: validationError,
+      });
+    }
 
     const scanResult = await getUserByUsername(body.username);
     if (scanResult)
