@@ -7,7 +7,7 @@ provider:
   profile: in-examination
   region: eu-north-1
   iam:
-    role: arn:aws:iam::861123931289:role/quiztopia-examination
+    role: MISSING
   deploymentMethod: direct
   stage: api
 
